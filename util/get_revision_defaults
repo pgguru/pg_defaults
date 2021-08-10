@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# NOTE: this script is intended only for the maintainer of this module to facilitate the gathering
+# of the settings data for a specific PostgreSQL revision for updated released.
+
+# We are currently doing this the "hard" way, building the target PostgreSQL version and issuing a
+# SELECT against target columns in the pg_settings() view.  Since this data is static, we can
+# improve the process as long as the output would be the same from future scripts; we will
+# order/normalize in the same way so this will be consistent.
+
+# We do allow you to pick an arbitrary revision here, but we may decide that only the latest bugfix
+# release of a major version will matter; that responsibility will be up to the driver of this
+# script.
+
+# This process is not expected to be fast, so we cache the data for the given revision in a file
+# named after the version tag.  This data is considered to be ephemeral work data and is not itself
+# stored in version control, as we expect some level of parsing/transformation may be required to
+# represent in the distributed extension.
+
+VERSION=$1
+OUTDIR=$(git rev-parse --show-toplevel)/raw
+PGENV=$(which pgenv)
+
+if [[ -z "$VERSION" ]]; then
+    echo "Usage: $0 <version>" >&2
+    exit 1
+fi
+
+if [[ -f $OUTDIR/$VERSION.txt ]]; then
+    echo "$VERSION already exists in $OUTDIR (remove and rerun to regenerate)"
+    exit 0
+fi
+
+if [[ -z "$PGENV" || ! -x "$PGENV" ]]; then
+    echo "Executable 'pgenv' is required and could not be found; download and install this to continue"
+    exit 1
+fi
+
+if [[ -z "$PGENV_ROOT" ]]; then
+    echo "Can't detect PGENV_ROOT; ensure 'pgenv' is installed and working in your shell"
+    exit 1
+fi
+
+# stop any existing pgenv setup
+$PGENV stop
+PGENV_MAKE_OPTS='-j7' $PGENV build $VERSION
+$PGENV use $VERSION             # implies a start
+
+$PGENV_ROOT/pgsql/bin/psql -AXqtc "SELECT name,setting,context,vartype,source,min_val,max_val from pg_settings ORDER BY 1" > $OUTDIR/$VERSION.txt
+
+$PGENV stop                     # could remove as well, but we'll just try to make sure 

@@ -41,11 +41,20 @@ if [[ -z "$PGENV_ROOT" ]]; then
     exit 1
 fi
 
+if pgenv versions 2>/dev/null | grep -qw $VERSION; then
+    echo Using an explicitly installed version, so not cleaning up
+    EXISTED=1
+fi
+
 # stop any existing pgenv setup
 $PGENV stop
-PGENV_MAKE_OPTS='-j7' $PGENV build $VERSION
+$PGENV build $VERSION
 $PGENV use $VERSION             # implies a start
 
 $PGENV_ROOT/pgsql/bin/psql -AXqtc "SELECT name,setting,context,vartype,source,min_val,max_val from pg_settings ORDER BY 1" > $OUTDIR/$VERSION.txt
 
-$PGENV stop                     # could remove as well, but we'll just try to make sure 
+if [[ -z "$EXISTED" ]]; then
+    $PGENV remove $VERSION
+else
+    $PGENV stop
+fi

@@ -52,6 +52,7 @@ $PGENV build $VERSION
 $PGENV use $VERSION             # implies a start
 
 $PGENV_ROOT/pgsql/bin/psql -AXqtc "SELECT name,setting,context,vartype,source,min_val,max_val from pg_settings ORDER BY 1" > $OUTDIR/$VERSION.txt
+$PGENV_ROOT/pgsql/bin/postmaster --describe-config > $OUTDIR/$VERSION.cfg
 
 if [[ -z "$EXISTED" ]]; then
     $PGENV remove $VERSION

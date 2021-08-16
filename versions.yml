@@ -1,0 +1,43 @@
+versions:
+  8.2:
+    supported: false
+    patch: 23
+  8.3:
+    supported: false
+    patch: 23
+  8.4:
+    supported: false
+    patch: 22
+  9.0:
+    supported: false
+    patch: 23
+  9.1:
+    supported: false
+    patch: 24
+  9.2:
+    supported: false
+    patch: 24
+  9.3:
+    supported: false
+    patch: 25
+  9.4:
+    supported: false
+    patch: 26
+  9.5:
+    supported: false
+    patch: 25
+  9.6:
+    supported: false
+    patch: 23
+  10:
+    supported: true
+    patch: 18
+  11:
+    supported: true
+    patch: 13
+  12:
+    supported: true
+    patch: 3
+  13:
+    supported: true
+    patch: 4

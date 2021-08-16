@@ -1,0 +1,22 @@
+#!/usr/bin/env perl -l
+
+use strict;
+use warnings;
+
+use YAML::XS;
+
+my $VERSION_YAML_FILE=`git rev-parse --show-toplevel`;
+chomp $VERSION_YAML_FILE;
+$VERSION_YAML_FILE .= "/versions.yml";
+
+die "Can't location versions.yml\n" unless -f $VERSION_YAML_FILE;
+
+my $obj = YAML::XS::LoadFile($VERSION_YAML_FILE);
+
+die "Bad structure for versions.yml\n" unless $obj->{versions};
+
+for my $major_version (sort { $a <=> $b } keys %{$obj->{versions}}) {
+    my $patch = $obj->{versions}->{$major_version}->{patch};
+
+    print "$major_version.$_" for 0..$patch;
+}

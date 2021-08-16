@@ -2,7 +2,9 @@
 
 mkdir -p logs
 
-for version in 8.1.{0..23} 8.2.{0..23} 8.3.{0..23} 8.4.{0..22} 9.0.{0..23} 9.1.{0..24} 9.2.{0..24} 9.3.{0..25} 9.4.{0..26} 9.5.{0..25} 9.6.{0..22} 10.{0..17} 11.{0..12} 12.{0..7} 13.{0..3}; do
+bindir=$(cd $(dirname $0); pwd)
+
+for version in $($bindir/versions); do
     echo "Building version $version"
-    ./util/get_revision_defaults $version >logs/$version.log 2>&1
+    $bindir/get_revision_defaults $version >logs/$version.log 2>&1
 done

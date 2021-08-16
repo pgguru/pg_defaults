@@ -1,0 +1,13 @@
+#!/bin/bash
+
+cd $(git rev-parse --show-toplevel)
+mkdir -p dist
+
+# generate data for available versions
+./util/versions > dist/versions.dat
+
+# build everything so we have the source config files
+./util/update_all_versions
+
+# generate the compressed output for the table data
+./util/compress_version_data > dist/all_gucs.dat

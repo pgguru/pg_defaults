@@ -26,7 +26,7 @@ if [[ -z "$VERSION" ]]; then
     exit 1
 fi
 
-if [[ -f $OUTDIR/$VERSION.txt ]]; then
+if [[ -f $OUTDIR/$VERSION.cfg ]]; then
     echo "$VERSION already exists in $OUTDIR (remove and rerun to regenerate)"
     exit 0
 fi
@@ -51,7 +51,6 @@ $PGENV stop
 $PGENV build $VERSION
 $PGENV use $VERSION             # implies a start
 
-$PGENV_ROOT/pgsql/bin/psql -AXqtc "SELECT name,setting,context,vartype,source,min_val,max_val from pg_settings ORDER BY 1" > $OUTDIR/$VERSION.txt
 $PGENV_ROOT/pgsql/bin/postmaster --describe-config > $OUTDIR/$VERSION.cfg
 
 if [[ -z "$EXISTED" ]]; then

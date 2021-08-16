@@ -1,0 +1,84 @@
+#!/usr/bin/env perl -l
+
+use autodie;
+use strict;
+use warnings;
+
+use YAML::XS;
+use Digest::MD5 qw/md5_hex/;
+
+# store row idents indexed by unique hash of everything but version
+my $gucs = {};
+# store min/max/individual versions by hash
+my $versions = {};
+
+# duplicating some of the logic from `versions`, because we may want to expand more metadata than
+# just the version number in the future.
+
+my $ROOT =`git rev-parse --show-toplevel`;
+chomp $ROOT;
+my $VERSION_YAML_FILE = "$ROOT/versions.yml";
+
+die "Can't location versions.yml\n" unless -f $VERSION_YAML_FILE;
+
+my $obj = YAML::XS::LoadFile($VERSION_YAML_FILE);
+
+die "Bad structure for versions.yml\n" unless $obj->{versions};
+
+for my $major_version (sort { $a <=> $b } keys %{$obj->{versions}}) {
+    my $patch = $obj->{versions}->{$major_version}->{patch};
+
+    handle_version($major_version, $_) for 0..$patch;
+    complete_major_version($major_version);
+}
+
+output_all_versions();
+
+exit;
+
+sub handle_version {
+    my ($major_version, $patch) = @_;
+    my $file = "$ROOT/raw/$major_version.$patch.cfg";
+    my $version = "$major_version.$patch";
+
+    die "Missing config file for version $major_version.$patch\n" unless -f $file;
+
+    open my $fh, '<', $file;
+
+    while (my $line = <$fh>) {
+        chomp $line;
+        my @row = split "\t" => $line;
+        my $id = row_hash(@row);
+
+        # store the row if we haven't had any references to it before; 0'th column is reference to
+        # the version hash
+
+        my $version_range = $versions->{$id} //= [ $version ];
+        $gucs->{$row[0]}->{$id} //= [ $version_range, @row ];
+
+        $version_range->[1] = $version; # update the latest version of this specific row 
+    }
+}
+
+sub complete_major_version {
+    my ($major_version) = @_;
+}
+
+sub output_all_versions {
+
+    for my $key (sort keys %$gucs) {
+        for my $id (keys %{$gucs->{$key}}) {
+            my $row = $gucs->{$key}->{$id};
+            print join "\t" => @$row[1..8], $row->[0]->[0], $row->[0]->[1];
+            print "\n";
+        }
+    }
+    
+    $gucs = {};
+    $versions = {};
+    
+}
+
+sub row_hash {
+    return md5_hex(join '-' => @_);
+}

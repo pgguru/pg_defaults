@@ -70,7 +70,6 @@ sub output_all_versions {
         for my $id (keys %{$gucs->{$key}}) {
             my $row = $gucs->{$key}->{$id};
             print join "\t" => @$row[1..8], $row->[0]->[0], $row->[0]->[1];
-            print "\n";
         }
     }
     

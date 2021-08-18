@@ -2,4 +2,3 @@ comment = 'expose current and historic GUCs and default values in queryable form
 default_version = '0.0.1'
 relocatable = true
 trusted = true
-module_pathname = '$libdir/pg_defaults'

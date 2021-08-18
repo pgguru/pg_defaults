@@ -35,3 +35,22 @@ These functions are used internally for support, but may be handy for other usag
 ## Version support
 
 Data was gathered back to PostgreSQL 8.2.0, using default compilation settings built using `pgenv` on a Fedora 33 machine.  Older versions could be added in the future if this is determined to be useful, but `pgenv` ran into issues with compilations in 8.1.x and below, so for now those are the versions this extension knows about.
+
+## Examples
+
+```
+postgres=# select * from pg_defaults('13.3') limit 10;
+          name           |  context   |                               group                               | vartype | reset_val | min_val |  max_val   |                                        description                                        | min_vers | max_vers
+-------------------------+------------+-------------------------------------------------------------------+---------+-----------+---------+------------+-------------------------------------------------------------------------------------------+----------+----------
+ DateStyle               | user       | Client Connection Defaults / Locale and Formatting                | STRING  | ISO, MDY  |         |            | Sets the display format for date and time values.                                         | 8.2.0    | 13.4
+ IntervalStyle           | user       | Client Connection Defaults / Locale and Formatting                | ENUM    | postgres  |         |            | Sets the display format for interval values.                                              | 8.4.0    | 13.4
+ TimeZone                | user       | Client Connection Defaults / Locale and Formatting                | STRING  | GMT       |         |            | Sets the time zone for displaying and interpreting time stamps.                           | 9.2.0    | 13.4
+ archive_cleanup_command | sighup     | Write-Ahead Log / Archive Recovery                                | STRING  |           |         |            | Sets the shell command that will be executed at every restart point.                      | 12.0     | 13.4
+ archive_command         | sighup     | Write-Ahead Log / Archiving                                       | STRING  |           |         |            | Sets the shell command that will be called to archive a WAL file.                         | 9.0.0    | 13.4
+ archive_mode            | postmaster | Write-Ahead Log / Archiving                                       | ENUM    | off       |         |            | Allows archiving of WAL files using archive_command.                                      | 9.5.11   | 13.4
+ archive_timeout         | sighup     | Write-Ahead Log / Archiving                                       | INTEGER | 0         | 0       | 1073741823 | Forces a switch to the next WAL file if a new file has not been started within N seconds. | 10.2     | 13.4
+ array_nulls             | user       | Version and Platform Compatibility / Previous PostgreSQL Versions | BOOLEAN | FALSE     |         |            | Enable input of NULL elements in arrays.                                                  | 8.3.0    | 13.4
+ authentication_timeout  | sighup     | Connections and Authentication / Authentication                   | INTEGER | 0         | 1       | 600        | Sets the maximum allowed time to complete client authentication.                          | 11.0     | 13.4
+ autovacuum              | sighup     | Autovacuum                                                        | BOOLEAN | FALSE     |         |            | Starts the autovacuum subprocess.                                                         | 8.2.0    | 13.4
+(10 rows)
+```

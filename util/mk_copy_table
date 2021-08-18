@@ -1,0 +1,22 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+my $tablename = shift;
+
+print "TRUNCATE $tablename;\n";
+while (<>) {
+    chomp;
+    print <<EOF;
+INSERT INTO $tablename VALUES (@{[join ',' => map { quote($_) } split /\t/ => $_ ]});
+EOF
+}
+
+sub quote {
+    my $repl = {
+        q{'}  => q{''},
+#        q{\\} => q{\\},
+    };
+
+    sprintf("'%s'", join '' => map { $repl->{$_} // $_ } split // => +shift);
+}

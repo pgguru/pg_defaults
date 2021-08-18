@@ -21,6 +21,8 @@ VERSION=$1
 OUTDIR=$(git rev-parse --show-toplevel)/raw
 PGENV=$(which pgenv)
 
+mkdir -p $OUTDIR
+
 if [[ -z "$VERSION" ]]; then
     echo "Usage: $0 <version>" >&2
     exit 1

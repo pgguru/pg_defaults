@@ -37,7 +37,7 @@ versions:
     patch: 13
   12:
     supported: true
-    patch: 3
+    patch: 8
   13:
     supported: true
     patch: 4

@@ -27,20 +27,20 @@ versions:
     final: true
     patch: 25
   9.6:
-    final: false
-    patch: 23
+    final: true
+    patch: 24
   10:
     final: false
-    patch: 18
+    patch: 21
   11:
     final: false
-    patch: 13
+    patch: 16
   12:
     final: false
-    patch: 8
+    patch: 11
   13:
     final: false
-    patch: 4
+    patch: 7
   14:
     final: false
-    patch: 0
+    patch: 3

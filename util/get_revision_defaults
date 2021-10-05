@@ -48,12 +48,21 @@ if pgenv versions 2>/dev/null | grep -qw $VERSION; then
     EXISTED=1
 fi
 
+export CFLAGS='-O0'
+
 # stop any existing pgenv setup
 $PGENV stop
 $PGENV build $VERSION
 $PGENV use $VERSION             # implies a start
 
 $PGENV_ROOT/pgsql/bin/postmaster --describe-config > $OUTDIR/$VERSION.cfg
+
+if [ ! -f $OUTDIR/$VERSION.initdb ]; then
+    echo "creating initdb"
+    rm -Rf /tmp/initdb.tmp
+    $PGENV_ROOT/pgsql/bin/initdb -D /tmp/initdb.tmp
+    cp /tmp/initdb.tmp/postgresql.conf $OUTDIR/$VERSION.initdb
+fi
 
 if [[ -z "$EXISTED" ]]; then
     $PGENV remove $VERSION

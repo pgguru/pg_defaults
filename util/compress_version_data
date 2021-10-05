@@ -1,4 +1,4 @@
-#!/usr/bin/env perl -l
+#!/usr/bin/env -S perl -l
 
 use autodie;
 use strict;

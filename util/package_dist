@@ -3,15 +3,40 @@
 cd $(git rev-parse --show-toplevel)
 
 BASE_VERS=base
-NEW_VERS=0.0.1
-FILE_NAME=pg_defaults
+# create a release version based on the current date plus an index.  It is unlikely that we will
+# support more changes beyond regular updates here.
+REL_VERS=$(grep default_version pg_defaults.control | cut -f 2 -d"'")
+OLD_VERS=$REL_VERS
+
+# if we already have released this version, increment until we haven't
+while [ $(git tag -l "REL_$REL_VERS") ]; do
+    REL_VERS=$(( REL_VERS + 1 ))
+done
+
+TAG_NAME=REL_$REL_VERS
+FILE_NAME=sql/pg_defaults--$BASE_VERS--$REL_VERS.sql
 
 # generate data for available versions
-./util/versions | ./util/mk_copy_table pg_defaults_versions > $FILE_NAME--$BASE_VERS--$NEW_VERS.sql
+./util/versions | ./util/mk_copy_table pg_defaults_versions > $FILE_NAME
 
 # build everything so we have the source config files
 ./util/update_all_versions
 
 # generate the compressed output for the table data
-./util/compress_version_data | ./util/mk_copy_table pg_defaults_gucs >> $FILE_NAME--$BASE_VERS--$NEW_VERS.sql
+./util/compress_version_data | ./util/mk_copy_table pg_defaults_gucs >> $FILE_NAME
+
+# code path if we are truly increasing the version (i.e., old one has been tagged)
+if [[ ! "$REL_VERS" = "$OLD_VERS" ]]; then
+    # create a dummy upgrade path file; we only support the final version, so this is effectively a no-op
+    (cd sql; ln -sf $(basename $FILE_NAME) pg_defaults--$OLD_VERS--$REL_VERS.sql)
+fi
+
+# TODO: add detection of which new versions were added
+cat <<EOF
+Everything is done; to continue, validate the output, then when happy run the following commands:
+
+git add $FILE_NAME
+git commit -m 'feature: revisions for $REL_VERS'
+git tag -s $TAG_NAME
+EOF
 

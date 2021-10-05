@@ -1,43 +1,43 @@
 versions:
   8.2:
-    supported: false
+    final: true
     patch: 23
   8.3:
-    supported: false
+    final: true
     patch: 23
   8.4:
-    supported: false
+    final: true
     patch: 22
   9.0:
-    supported: false
+    final: true
     patch: 23
   9.1:
-    supported: false
+    final: true
     patch: 24
   9.2:
-    supported: false
+    final: true
     patch: 24
   9.3:
-    supported: false
+    final: true
     patch: 25
   9.4:
-    supported: false
+    final: true
     patch: 26
   9.5:
-    supported: false
+    final: true
     patch: 25
   9.6:
-    supported: false
+    final: false
     patch: 23
   10:
-    supported: true
+    final: false
     patch: 18
   11:
-    supported: true
+    final: false
     patch: 13
   12:
-    supported: true
+    final: false
     patch: 8
   13:
-    supported: true
+    final: false
     patch: 4
